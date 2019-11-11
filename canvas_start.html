@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>Drawing Area</title>
+<!-- You can add your style here rather than in an external style sheet. -->
+		<style>
+			canvas {
+	    	border:5px solid #d3d3d3;
+	    	background-color: #f1f1f1;
+	    	display: block;
+			}
+		</style>
+	</head>
+	<body onload="coolCanvas.onResize()">
+    <!-- DO NOT MODIFY THIS HTML -->
+    <canvas id = "myCanvas" width = "350" height = "500"></canvas>
+    <input type = "color" id = "picker"/>
+		<script>
+			canvas = document.getElementById("myCanvas");
+			context = canvas.getContext("2d");
+			rect = canvas.getBoundingClientRect();
+			x = null;
+			y = null;
+			document.body.insertBefore(canvas, document.body.childNodes[0]);
+			paint = true;
+			let coolCanvas = {
+				canvas: this.canvas,
+				context: this.context,
+				rect: this.rect,
+				x: this.x,
+				y: this.y,
+				paint: this.paint,
+
+				onResize: function() {
+					this.canvas.width = .8*window.innerWidth;
+					this.canvas.height = .8*window.innerHeight;
+				},
+
+				onMouseUpdate: function(e){
+					this.x = e.pageX;
+					this.y = e.pageY;
+				},
+
+				getXCoord: function(){
+					return this.x;
+				},
+
+				getYCoord: function(){
+					return this.y;
+				},
+
+				eventCoords: function(){
+					document.addEventListener('mousemove', this.onMouseUpdate, false);
+					document.addEventListener('mouseenter', this.onMouseUpdate, false);
+				},
+
+				keyPress: function() {
+					document.addEventListener('keydown', e=> {
+						if (e.which == 66) {
+							document.getElementById("picker").value = '#0000FF';
+						}
+						else if (e.which == 71) {
+							document.getElementById("picker").value = '#00FF00';
+						}
+						else if (e.which == 82) {
+							document.getElementById("picker").value = '#FF0000';
+						}
+						else if (e.which == 89) {
+							document.getElementById("picker").value = '#FFFF00';
+						}
+						else if (e.code == "Space"){
+							this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+						}
+					}
+					);
+				},
+
+				getPaint: function(){
+					document.addEventListener('keydown', e=> {
+						if (e.code == "ArrowDown"){
+							this.paint = "false";
+						}
+						else if (e.code == "ArrowUp"){
+							this.paint = "true";
+						}
+						console.log(this.paint);
+						return this.paint;
+					});
+				},
+
+				drawLine: function(context, x1, y1, x2, y2) {
+					this.context.beginPath();
+					this.context.strokeStyle = document.getElementById("picker").value;
+					this.context.arc(x1, y1, 10, 0, 2 * Math.PI);
+					this.context.fillStyle = this.context.strokeStyle;
+					this.context.moveTo(x2, y2);
+					this.context.stroke();
+					this.context.fill();
+					this.context.closePath();
+				},
+
+				eventDraw: function(){
+					if (this.paint = "true"){
+						this.canvas.addEventListener('mousemove', e => {
+							this.drawLine(this.context, this.x, this.y, e.clientX - this.rect.left, e.clientY - this.rect.top);
+							this.x = e.clientX - this.rect.left;
+							this.y = e.clientY - this.rect.top;
+						}
+					);
+					}
+					}
+	}
+		window.addEventListener('resize', coolCanvas.onResize, false);
+		coolCanvas.keyPress();
+		coolCanvas.getPaint();
+		coolCanvas.eventCoords();
+		coolCanvas.eventDraw();
+		console.log(coolCanvas.getPaint);
+		</script>
+	</body>
+</html>
